@@ -1,4 +1,6 @@
-Model/*
-Test_dataset/*
-Train_dataset/*
+Dataset/Test_dataset/*
+Dataset/Train_dataset/*
+
+!Dataset/Test_dataset
+!Dataset/Train_dataset
 Uploads/*

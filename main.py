@@ -3,22 +3,28 @@ import os
 
 st.set_page_config(layout='wide')
 # Define the file path to your image
-# image_path = './icon/logoM.png'
+# image_path = './Icon/Human_body_logo.png'
 
-st.markdown("<h1 style='text-align: center; font-size: 40px;color: black;'>Human Anomaly Detection - Manufacturing Safety Solution</h1>", 
+#NOTE: change this links to github.com
+st.markdown("""
+<h2 style='text-align: left; font-size: 15px;'>
+For more information or looking for collaboration please visit this 
+<a href="https://huggingface.co/spaces/hysts/ViTPose_video" target="_blank">link</a>.
+</h2>
+""", unsafe_allow_html=True)
+
+
+st.markdown("<h1 style='text-align: center; font-size: 40px;color: black;'> 🏃‍♂️Human Anomaly Detection - Manufacturing Safety Solution</h1>", 
             unsafe_allow_html=True)
-# st.markdown("<h1 style='text-align: center; color: black;'>\n</h1>", 
-#             unsafe_allow_html=True)
 
-# Forming columns
-input_video, col2 = st.columns(2,gap='large')
+input_video, result_col = st.columns(2,gap='large')
 
 with input_video:
     # Define your text content
-    st.markdown("<h2 style='text-align: center; font-size: 25px; color: black;'>Drop Video Here</h2>", 
+    st.markdown("<h2 style='text-align: center; font-size: 25px; color: black;'>Drop Video Here 🎬</h2>", 
                 unsafe_allow_html=True)
     upload_vid = st.file_uploader('') # Get video
-    # Crate a expander here
+    # Expander here
     with st.expander('View Video'):
         if upload_vid:
             video_file = upload_vid.read()
@@ -31,10 +37,23 @@ with input_video:
                 f.write(video_file)
             st.success(f'Svaed video: {video_filename}')
 
+    if upload_vid:
+        # Choose model
+        model_choices = ['Select a model', 'ViViT', 'VP-GRU', 'CNN-GRU (Pre-trained)']
+        model_choice = st.selectbox('Choose One Model:', model_choices)
 
-with col2:
+
+
+# Reuslt columns
+with result_col:
     st.markdown("<h2 style='text-align: center; font-size: 25px; color: black;'>Result</h2>", 
                 unsafe_allow_html=True)
+    if upload_vid:
+        #TODO: Call model..
+        if model_choice == 'Select a model':
+            st.write('No model selected.')
+        else:
+            st.write('You have selected:', model_choice)
 
 
 # Preview video
