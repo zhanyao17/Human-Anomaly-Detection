@@ -1,7 +1,9 @@
 
 import tensorflow as tf
 from keras import layers, ops, regularizers
-from tensorflow.keras.utils import register_keras_serializable
+from tensorflow.keras.utils import register_keras_serializable # type: ignore
+import cv2
+import numpy as np
 
 @register_keras_serializable(package="Custom", name="TubeletEmbedding")
 class TubeletEmbedding(layers.Layer):
@@ -44,7 +46,8 @@ class ModelLoader:
     def __init__(self, model_path):
         self.model_path = model_path
         self.model = None
-
+    
+    # Load model from .keras
     def load_model(self):
         # Load the model with custom objects
         self.model = tf.keras.models.load_model(
@@ -60,6 +63,58 @@ class ModelLoader:
         if self.model is None:
             raise ValueError("Model is not loaded. Call `load_model` first.")
         return self.model
+    
+    # Perform Resizing to (224,224)
+    def load_all_frames(self,video_path):
+        cap = cv2.VideoCapture(video_path)
+        if not cap.isOpened():
+            return {'frames': None, 'frames_dim': None, 'success': False}
+
+        frames_dims = []
+        frames = []
+        while cap.isOpened():
+            ret, frame = cap.read()
+            if not ret:
+                break
+            h, w, c = frame.shape
+            frames_dims.append([0, h, w, c])
+            frame = cv2.resize(frame, (224, 224), interpolation=cv2.INTER_CUBIC)
+            frames.append(frame)
+
+        cap.release()
+        return {'frames': np.asarray(frames), 'frames_dim': frames_dims, 'success': True}
+
+    # Trim videos to 40 frames
+    def trim_video_frames(self,video, max_frame):
+        '''
+        Args:
+            video: video (collection of frames)
+            max_frame: max number of frames
+        '''
+        f, _, _, _ = video.shape
+        startf = f // 2 - max_frame // 2
+        return video[startf:startf + max_frame, :, :, :]
+
+    def preprocess_single_video(self,video):
+        video = self.trim_video_frames(video, 40)
+        video = tf.image.convert_image_dtype(video, tf.float32)
+        return video
+    
+    # Make prediction
+    def pred(self,model,video_path):
+        label_dict = {0: 'Normal', 1: 'Abnormal'}
+        load_data = self.load_all_frames(video_path)
+        if not load_data['success']:
+            print('Video is corrupt!!')
+            return 0
+        else:
+            video = load_data['frames']
+            preprocessed_video = self.preprocess_single_video(video)
+            output = model.predict(tf.expand_dims(preprocessed_video, axis=0))[0]
+            # print(output)
+            pred = np.argmax(output, axis=0)
+            # print(label_dict[pred])
+            return output, pred, label_dict[pred] 
 
 """
 initialize in main.py
