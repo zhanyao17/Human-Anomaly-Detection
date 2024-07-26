@@ -1,4 +1,3 @@
-
 import tensorflow as tf
 from keras import layers, ops, regularizers
 from tensorflow.keras.utils import register_keras_serializable # type: ignore

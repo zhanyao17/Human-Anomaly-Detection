@@ -1,6 +1,7 @@
 Dataset/Test_dataset/*
 Dataset/Train_dataset/*
-
+easy_ViTPose/*
 !Dataset/Test_dataset
 !Dataset/Train_dataset
+!easy_ViTPose
 Uploads/*
