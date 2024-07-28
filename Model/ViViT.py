@@ -41,7 +41,7 @@ class PositionalEncoder(layers.Layer):
         return encoded_tokens
 
 
-class ModelLoader:
+class ViViT:
     def __init__(self, model_path):
         self.model_path = model_path
         self.model = None
