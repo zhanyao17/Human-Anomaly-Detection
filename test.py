@@ -59,3 +59,20 @@
 # # Optional: Handle logic based on the selected choice
 # if st.session_state.selection == 1:
 #     st.write('Selected choice is 1')
+
+
+# convert avi to mp4
+#  ffmpeg -i input.avi -strict -2 output.mp4
+
+
+import os
+
+# Define the input and output file paths
+input_file = './Dataset/Test_dataset/abnormal/video_254_flip.avi'
+output_file = './Dataset/Test_dataset/abnormal/output.mp4'
+
+# Construct the FFmpeg command
+command = f'ffmpeg -i {input_file} -strict -2 -y {output_file}'
+
+# Execute the command
+os.system(command)

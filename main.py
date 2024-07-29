@@ -9,8 +9,6 @@ import timeit
 from datetime import datetime
 import numpy as np
 
-# import SessionState # type: ignore
-
 # Model packages
 from Model.ViViT import ViViT
 from Model.VP_GRU import VP_GRU
@@ -19,10 +17,6 @@ from Model.CNN_GRU import CNN_GRU
 
 st.set_page_config(layout='wide')
 
-# Define the file path to your image
-# image_path = './Icon/Human_body_logo.png'
-
-# NOTE: change this links to github.com
 st.markdown("""
 <h2 style='text-align: left; font-size: 15px;'>
 For more information or looking for collaboration please visit this 
@@ -30,9 +24,12 @@ For more information or looking for collaboration please visit this
 </h2>
 """, unsafe_allow_html=True)
 
-st.markdown("<h1 style='text-align: center; font-size: 40px;color: black;'> 🏃‍♂️Human Anomaly Detection - Manufacturing Safety Solution</h1>", 
+st.markdown("""<h1 style='text-align: center; font-size: 40px;color: black;'> 
+            🏃‍♂️Human Anomaly Detection - Manufacturing Safety Solution</h1>""", 
             unsafe_allow_html=True)
 
+
+# Define columns
 input_video, result_col = st.columns(2, gap='large')
 
 with input_video:
@@ -44,8 +41,6 @@ with input_video:
     with st.expander('View Video'):
         if upload_vid:
             video_file = upload_vid.read()
-            st.video(video_file)
-
             # Save video
             save_path = 'Uploads'
             if not os.path.exists(save_path):
@@ -54,6 +49,17 @@ with input_video:
             with open(video_filename, 'wb') as f:
                 f.write(video_file)
             st.success(f'Saved video: {video_filename}')
+
+            # convert file to mp4
+            output_filepath = video_filename
+            if video_filename[-3:] != 'mp4':
+                command = f'ffmpeg -i {video_filename} -strict -2 -y Uploads/output.mp4'
+                os.system(command)
+                output_filepath = 'Uploads/output.mp4'
+
+            # preview 
+            st.video(output_filepath)
+
     
     # Define allignment for button and select box
     st.markdown("""
@@ -103,7 +109,7 @@ with result_col:
                 with st.spinner('Predicting....'):
                     output, pred, label = loader.pred(model, video_filename)
                     duration = round(timeit.default_timer() - st_time, 3)
-                    new_record = {'Model': model_choice, 'Prediction_Label': label, 'Time_Taken': str(duration),'File_Name':video_filename, 'Exec_Date':str(datetime.now())}
+                    new_record = {'Model': model_choice, 'Prediction_Label': label, 'Time_Taken': str(duration),'File_Name':video_filename, 'Exec_Date':str(datetime.now().strftime("%d-%m-%y %H:%M:%S"))}
                     st.session_state.df_result = st.session_state.df_result._append(new_record, ignore_index=True)
 
             elif model_choice == 'VP-GRU':
@@ -118,14 +124,13 @@ with result_col:
                 with st.spinner('Extracting human pose....'):
                     key_frames = loader.prepare_data(video_filename, vp_model) 
                     # precheck on the pose extracted
-                    print((np.array(key_frames).shape)[0])
                 with st.spinner('Predicting....'):
                     if (np.array(key_frames).shape)[0] == 40:
                         pred = loader.pred(gru_model, key_frames)
                     else:
                         pred = 'NaN'
                     duration = round(timeit.default_timer() - st_time, 3)
-                    new_record = {'Model': model_choice, 'Prediction_Label': pred, 'Time_Taken': str(duration),'File_Name':video_filename,'Exec_Date':str(datetime.now())}
+                    new_record = {'Model': model_choice, 'Prediction_Label': pred, 'Time_Taken': str(duration),'File_Name':video_filename,'Exec_Date':str(datetime.now().strftime("%d-%m-%y %H:%M:%S"))}
                     st.session_state.df_result = st.session_state.df_result._append(new_record, ignore_index=True)
 
             elif model_choice == 'CNN-GRU (Pre-trained)':
@@ -142,14 +147,14 @@ with result_col:
                 with st.spinner('Predicting....'):
                     prediction = model.pred(frame_features, gru_model)
                     duration = round(timeit.default_timer() - st_time, 3)
-                    new_record = {'Model': model_choice, 'Prediction_Label': prediction, 'Time_Taken': str(duration),'File_Name':video_filename,'Exec_Date':str(datetime.now())}
+                    new_record = {'Model': model_choice, 'Prediction_Label': prediction, 'Time_Taken': str(duration),'File_Name':video_filename,'Exec_Date':str(datetime.now().strftime("%d-%m-%y %H:%M:%S"))}
                     st.session_state.df_result = st.session_state.df_result._append(new_record, ignore_index=True)
 
 
 
             
         # Display output result here in table
-        sorted_df = st.session_state.df_result.sort_values(by='Exec_Date',ascending=False)
+        sorted_df = st.session_state.df_result.sort_values(by='Exec_Date',ascending=False).reset_index(drop=True)
         st.table(sorted_df)
 
         # Create tab
