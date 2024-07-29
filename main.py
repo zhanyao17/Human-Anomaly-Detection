@@ -54,12 +54,29 @@ with input_video:
             with open(video_filename, 'wb') as f:
                 f.write(video_file)
             st.success(f'Saved video: {video_filename}')
+    
+    # Define allignment for button and select box
+    st.markdown("""
+        <style>
+        .stSelectbox {
+            width: 800px;
+        }
+        .stButton button {
+            width: 100px;
+        }
+        </style>
+        """, unsafe_allow_html=True)
 
     if upload_vid:
-        # Choose model
+        left, right = st.columns([7,1],vertical_alignment='bottom',gap='small')
+        # Model select box
         model_choices = ['Select a model', 'ViViT', 'VP-GRU', 'CNN-GRU (Pre-trained)']
-        model_choice = st.selectbox('Choose One Model:', model_choices)
-
+        model_choice = left.selectbox('Choose One Model:', model_choices,key='selection')
+        
+        # Reset button
+        def reset():
+            st.session_state.selection = 'Select a model'
+        right.button('Reset', on_click=reset)
 
 # Result columns
 with result_col:
@@ -70,16 +87,11 @@ with result_col:
         # Initialize result DataFrame in session state if not already
         if 'df_result' not in st.session_state:
             st.session_state.df_result = pd.DataFrame(columns=['Model', 'Prediction_Label', 'Time_Taken','File_Name','Exec_Date'])
-        # Button to refresh data
-        if st.button('Refresh Data'):
-            st.session_state.df_result = pd.DataFrame(columns=['Model', 'Prediction_Label', 'Time_Taken', 'File_Name','Exec_Date'])
-            st.query_params(refresh='true')
         
         # Call model
         if model_choice == 'Select a model':
             st.write('No model selected.')
         else:
-
             st.write('Now presenting result for :', model_choice)
             if model_choice == 'ViViT':
                 with st.spinner('Processing....'):
@@ -133,35 +145,33 @@ with result_col:
                     new_record = {'Model': model_choice, 'Prediction_Label': prediction, 'Time_Taken': str(duration),'File_Name':video_filename,'Exec_Date':str(datetime.now())}
                     st.session_state.df_result = st.session_state.df_result._append(new_record, ignore_index=True)
 
+
+
             
-            # Display output result here in table
-            sorted_df = st.session_state.df_result.sort_values(by='Exec_Date',ascending=False)
-            fig = go.Figure(data=[go.Table(
-                header=dict(values=list(sorted_df.columns),
-                            fill_color='rgb(240,242,246)',
-                            align='center',
-                            font=dict(color='black', size=19, weight='bold')
-                            ),
-                cells=dict(values=[sorted_df[col] for col in sorted_df.columns],
-                        #    fill_color='rgb(239,246,252)',
-                            align='center',
-                            font=dict(color='black', size=16)
-                           ))
-            ])
+        # Display output result here in table
+        sorted_df = st.session_state.df_result.sort_values(by='Exec_Date',ascending=False)
+        st.table(sorted_df)
 
-            fig.update_layout(width=800, height=400)
-            st.plotly_chart(fig)
-
-            # Display average speed time 
+        # Create tab
+        tab1, tab2 = st.tabs(['Average Time Taken','Cumulated Time Taken'])
+        # Display average speed time 
+        with tab1:
             mean_df = st.session_state.df_result
             mean_df['Time_Taken'] = pd.to_numeric(mean_df['Time_Taken'], errors='coerce')
             mean_time_taken = mean_df.groupby('Model')['Time_Taken'].mean().reset_index()
-
+            mean_time_taken = mean_time_taken.sort_values(by='Time_Taken',ascending=False)
             fig1 = px.bar(mean_time_taken, x='Model', y='Time_Taken', color='Model', title='Average Time Taken by Each Model',
-                          labels={'Time_Taken':'Mean Time Taken'})
+                        labels={'Time_Taken':'Mean Time Taken'})
             st.plotly_chart(fig1)
+        
+        # Display detection speed result here in bar charts
+        with tab2:
+            tot_df = st.session_state.df_result
+            tot_df['Time_Taken'] = pd.to_numeric(mean_df['Time_Taken'], errors='coerce')
+            tot_time_taken = tot_df.groupby('Model')['Time_Taken'].sum().reset_index()
+            tot_time_taken = tot_time_taken.sort_values(by='Time_Taken',ascending=False)
 
-            # Display detection speed result here in bar charts
-            fig = px.bar(st.session_state.df_result, x='Model', y='Time_Taken', color='Model', title='Cumulated Time Taken by Each Model')
+            fig = px.bar(tot_time_taken, x='Model', y='Time_Taken', color='Model', 
+                            title='Cumulated Time Taken by Each Model',labels={'Time_Taken':'Total Time Taken'})
             st.plotly_chart(fig)
 
