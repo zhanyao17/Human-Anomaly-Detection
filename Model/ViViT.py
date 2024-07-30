@@ -114,13 +114,3 @@ class ViViT:
             pred = np.argmax(output, axis=0)
             # print(label_dict[pred])
             return output, pred, label_dict[pred] 
-
-"""
-initialize in main.py
-
-from Model.ViViT import ModelLoader
-
-model_path = './Saved_model/ViViT_3July_2.keras'
-loader = ModelLoader(model_path)
-model = loader.load_model()
-"""

@@ -20,22 +20,27 @@ class VP_GRU:
     def load_ViT(self):
         ''' Define ViTpose & YOLO model params '''
         MODEL_SIZE = 'b' 
-        YOLO_SIZE = 's' 
         DATASET = 'coco' 
+
+        
+        ''' 
+        # NOTE: First time setting up pls remove this command block
         ext = '.pth'
         ext_yolo = '.pt'
         MODEL_TYPE = "torch"
-        
-        ''' File path 
-        # model path = JunkyByte/easy_ViTPose/torch/coco/vitpose-b-coco.pth [default]
-        '''
+        YOLO_SIZE = 's' 
+
         REPO_ID = 'JunkyByte/easy_ViTPose'
         FILENAME = os.path.join(MODEL_TYPE, f'{DATASET}/vitpose-' + MODEL_SIZE + f'-{DATASET}') + ext
         FILENAME_YOLO = 'yolov8/yolov8' + YOLO_SIZE + ext_yolo
-        # model_path = hf_hub_download(repo_id=REPO_ID, filename=FILENAME) # ViT-Pose - Human Pose
-        # yolo_path = hf_hub_download(repo_id=REPO_ID, filename=FILENAME_YOLO) # YOLO - Bouding box
-        model_path = '/Users/linzhanyao/.cache/huggingface/hub/models--JunkyByte--easy_ViTPose/snapshots/2757e82adcccda02f9f7fef66e5a115b7be439fe/torch/coco/vitpose-b-coco.pth'
-        yolo_path = '/Users/linzhanyao/.cache/huggingface/hub/models--JunkyByte--easy_ViTPose/snapshots/2757e82adcccda02f9f7fef66e5a115b7be439fe/yolov8/yolov8s.pt'
+        
+        model_path = hf_hub_download(repo_id=REPO_ID, filename=FILENAME) # ViT-Pose - Human Pose
+        yolo_path = hf_hub_download(repo_id=REPO_ID, filename=FILENAME_YOLO) # YOLO - Bouding box
+        '''
+        model_path = '/Users/linzhanyao/Project/Human-Anomaly-Detection/easy_ViTPose/models--JunkyByte--easy_ViTPose/snapshots/2757e82adcccda02f9f7fef66e5a115b7be439fe/torch/coco/vitpose-b-coco.pth'
+        
+        yolo_path = '/Users/linzhanyao/Project/Human-Anomaly-Detection/easy_ViTPose/models--JunkyByte--easy_ViTPose/snapshots/2757e82adcccda02f9f7fef66e5a115b7be439fe/yolov8/yolov8s.pt'
+
         VP_model = VitInference(model_path, yolo_path, MODEL_SIZE,
                      dataset=DATASET, yolo_size=320, is_video=False)
         return VP_model
@@ -82,20 +87,3 @@ class VP_GRU:
         output = gru.predict(tf.expand_dims(key_frames, axis=0))[0]
         pred = np.argmax(output.tolist(),axis=0)
         return label_dict[pred]
-    
-
-# model_path = '/Users/linzhanyao/Project/Human-Anomaly-Detection/Saved_model/VP-GRU_25Jul-97.keras'
-# video_path = '/Users/linzhanyao/Project/Human-Anomaly-Detection/Dataset/Test_dataset/abnormal/video_254_flip.avi' 
-# import timeit
-
-# VP_GRU_loader = VP_GRU(model_path)
-# gru_model = VP_GRU_loader.load_GRU()
-# vp_model = VP_GRU_loader.load_ViT()
-
-# st = timeit.default_timer()
-# key_frames = VP_GRU_loader.prepare_data(video_path,vp_model)
-# et = timeit.default_timer()
-
-# prediction = VP_GRU_loader.pred(gru_model,key_frames)
-# print(f'time taken: {et-st}')
-# print(f'Result: {prediction}')

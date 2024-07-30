@@ -109,7 +109,8 @@ with result_col:
                 with st.spinner('Predicting....'):
                     output, pred, label = loader.pred(model, video_filename)
                     duration = round(timeit.default_timer() - st_time, 3)
-                    new_record = {'Model': model_choice, 'Prediction_Label': label, 'Time_Taken': str(duration),'File_Name':video_filename, 'Exec_Date':str(datetime.now().strftime("%d-%m-%y %H:%M:%S"))}
+                    new_record = {'Model': model_choice, 'Prediction_Label': label, 'Time_Taken': str(duration),
+                                  'File_Name':video_filename, 'Exec_Date':str(datetime.now().strftime("%d-%m-%y %H:%M:%S"))}
                     st.session_state.df_result = st.session_state.df_result._append(new_record, ignore_index=True)
 
             elif model_choice == 'VP-GRU':
@@ -130,7 +131,8 @@ with result_col:
                     else:
                         pred = 'NaN'
                     duration = round(timeit.default_timer() - st_time, 3)
-                    new_record = {'Model': model_choice, 'Prediction_Label': pred, 'Time_Taken': str(duration),'File_Name':video_filename,'Exec_Date':str(datetime.now().strftime("%d-%m-%y %H:%M:%S"))}
+                    new_record = {'Model': model_choice, 'Prediction_Label': pred, 'Time_Taken': str(duration),
+                                  'File_Name':video_filename,'Exec_Date':str(datetime.now().strftime("%d-%m-%y %H:%M:%S"))}
                     st.session_state.df_result = st.session_state.df_result._append(new_record, ignore_index=True)
 
             elif model_choice == 'CNN-GRU (Pre-trained)':
@@ -147,12 +149,10 @@ with result_col:
                 with st.spinner('Predicting....'):
                     prediction = model.pred(frame_features, gru_model)
                     duration = round(timeit.default_timer() - st_time, 3)
-                    new_record = {'Model': model_choice, 'Prediction_Label': prediction, 'Time_Taken': str(duration),'File_Name':video_filename,'Exec_Date':str(datetime.now().strftime("%d-%m-%y %H:%M:%S"))}
+                    new_record = {'Model': model_choice, 'Prediction_Label': prediction, 'Time_Taken': str(duration),
+                                  'File_Name':video_filename,'Exec_Date':str(datetime.now().strftime("%d-%m-%y %H:%M:%S"))}
                     st.session_state.df_result = st.session_state.df_result._append(new_record, ignore_index=True)
 
-
-
-            
         # Display output result here in table
         sorted_df = st.session_state.df_result.sort_values(by='Exec_Date',ascending=False).reset_index(drop=True)
         st.table(sorted_df)
