@@ -87,3 +87,18 @@ class VP_GRU:
         output = gru.predict(tf.expand_dims(key_frames, axis=0))[0]
         pred = np.argmax(output.tolist(),axis=0)
         return label_dict[pred]
+
+
+import timeit 
+model_path = './Saved_model/VP-GRU_25Jul-97.keras'
+loader = VP_GRU(model_path)
+gru_model = loader.load_GRU()
+vp_model = loader.load_ViT()
+st_time_pose = timeit.default_timer()
+key_frames = loader.prepare_data('./Dataset/Test_dataset/abnormal/video_254_flip.avi', vp_model) 
+duration_pose = round(timeit.default_timer() - st_time_pose, 3)
+st_time_pred = timeit.default_timer()
+pred = loader.pred(gru_model, key_frames)
+duration_pred = round(timeit.default_timer() - st_time_pred, 3)
+print(f'Duration for extracting human pose: {duration_pose}')
+print(f'Duration for prediction: {duration_pred}')

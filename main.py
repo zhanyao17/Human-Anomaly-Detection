@@ -50,15 +50,18 @@ with input_video:
                 f.write(video_file)
             st.success(f'Saved video: {video_filename}')
 
-            # convert file to mp4
+            # Convert file to mp4
             output_filepath = video_filename
             if video_filename[-3:] != 'mp4':
                 command = f'ffmpeg -i {video_filename} -strict -2 -y Uploads/output.mp4'
                 os.system(command)
                 output_filepath = 'Uploads/output.mp4'
 
-            # preview 
-            st.video(output_filepath)
+            # Preview video            
+            width = 55
+            side = max((100 - width) / 2, 0.01)
+            _, container, _ = st.columns([side, width, side])
+            container.video(output_filepath)
 
     
     # Define allignment for button and select box
