@@ -49,7 +49,7 @@ Here are some of baseline model had been proposed by prior researchers
 - As a results demonstrate that the proposed ViViT model outperforms the other models, by consistently achieving superior detection scores across both experiments. Nonetheless, the VP-GRU and CNN-GRU models also show better performance compared to the baseline models. 
 
 # Deployment
-![Result](./Results/deployment_result.png)
+![Result](./Results/Deployment_result.png)
 
 
 # Future improvement
