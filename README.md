@@ -46,7 +46,7 @@ Here are some of baseline model had been proposed by prior researchers
 
 - Pre-train model had the highest accuracy and percision however the recall is some what lower than other proposed model. NOTES: higher recall is crucial because it ensure that as many actual falls as possible are detected, missed falls or false negatives can lead to cirtical safey issues. Additionaly, the model recall dropped to below 90% during the Expriment II. 
 
-- As a results demonstrate that the proposed ViViT model outperforms the other models, by consistently achieving superior detection scores across both experiments. Nonetheless, the VP-GRU and CNN-GRU models also show better performance compared to the baseline models. 
+- As a results, the proposed ViViT model outperforms the other models, by consistently achieving superior detection scores across both experiments. Nonetheless, the VP-GRU and CNN-GRU models also show better performance compared to the baseline models. 
 
 # Deployment
 ![Result](./Results/Deployment_result.png)
