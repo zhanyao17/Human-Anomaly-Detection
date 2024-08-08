@@ -78,13 +78,3 @@ class CNN_GRU:
         pred = np.argmax(output.tolist(),axis=0)
         return label_dict[pred]
         
-    
-
-# model_path = './Saved_model/CNN-RNN_26Jul_1.keras'
-# vid_path = './Dataset/Test_dataset/abnormal/video_254_flip.avi'
-# model = CNN_GRU(model_path)
-# gru_model = model.load_GRU()
-# inception_model = model.load_incpetion()
-# frame_features = model.prepare_data(vid_path,inception_model)
-# predictions = model.pred(frame_features,gru_model)
-# print(predictions)
